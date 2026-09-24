@@ -1,0 +1,9 @@
+{
+  "title": "MatrixForge",
+  "short_desc": "Visual database schema designer. Draw tables and relationships, import existing SQL, then export MySQL, PostgreSQL or SQLite scripts or a PNG/SVG ER diagram. Private, no sign-up.",
+  "doclink": "#",
+  "status": "live",
+  "type": "module",
+  "slug": "matrix",
+  "tags": "free database schema designer er diagram erd sql generator mysql postgresql sqlite"
+}
