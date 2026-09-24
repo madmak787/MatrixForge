@@ -78,9 +78,9 @@ export function ExportDialog({ open, onOpenChange, tab, onTabChange, tables, pro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90dvh] flex-col border-primary/30 bg-card sm:max-w-3xl">
+      <DialogContent className="flex max-h-[90dvh] flex-col bg-card sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="glow-text text-primary">Export</DialogTitle>
+          <DialogTitle>Export</DialogTitle>
           <DialogDescription>
             {tables.length} table{tables.length === 1 ? '' : 's'} from “{projectName}”
           </DialogDescription>
@@ -104,18 +104,18 @@ export function ExportDialog({ open, onOpenChange, tab, onTabChange, tables, pro
                   onClick={() => setDialect(d.value)}
                   className={cn(
                     'rounded-md border px-3 py-1.5 text-xs transition-colors',
-                    dialect === d.value ? 'border-primary bg-primary/20 text-primary' : 'border-primary/25 text-muted-foreground hover:text-foreground',
+                    dialect === d.value ? 'border-primary/60 bg-primary/12 text-foreground' : 'text-muted-foreground hover:border-input hover:text-foreground',
                   )}
                 >
                   {d.label}
                 </button>
               ))}
             </div>
-            <pre className="max-h-[50dvh] min-h-40 overflow-auto rounded-md border border-primary/30 bg-background/60 p-4 text-xs leading-relaxed text-foreground select-text">
+            <pre className="max-h-[50dvh] min-h-40 overflow-auto rounded-md border bg-background/60 p-4 text-xs leading-relaxed text-foreground select-text">
               {sql}
             </pre>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => copy(sql)} className="border-primary/50 text-primary hover:bg-primary/20">
+              <Button variant="outline" onClick={() => copy(sql)} className="bg-transparent">
                 {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
                 {copied ? 'Copied' : 'Copy'}
               </Button>
@@ -140,7 +140,7 @@ export function ExportDialog({ open, onOpenChange, tab, onTabChange, tables, pro
                 variant="outline"
                 disabled={tables.length === 0}
                 onClick={() => exportImage('svg')}
-                className="h-auto flex-col gap-1 border-primary/50 py-4 text-primary hover:bg-primary/20"
+                className="h-auto flex-col gap-1 bg-transparent py-4"
               >
                 <ImageIcon className="size-5" />
                 <span>SVG vector</span>
@@ -154,7 +154,7 @@ export function ExportDialog({ open, onOpenChange, tab, onTabChange, tables, pro
               A full copy of the project, including positions and colors. Import it later with <b>Import</b> to continue where you left off or share it with someone.
             </p>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => copy(json)} className="border-primary/50 text-primary hover:bg-primary/20">
+              <Button variant="outline" onClick={() => copy(json)} className="bg-transparent">
                 {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
                 Copy
               </Button>

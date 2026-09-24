@@ -265,8 +265,8 @@ export function Canvas({
     return set
   }, [edges, selectedTable])
 
-  const gridSize = 20 * view.scale
-  const majorSize = gridSize * 5
+  const gridSize = 24 * view.scale
+  const dot = Math.max(0.8, Math.min(1.4, view.scale * 1.1))
 
   return (
     <div
@@ -274,13 +274,9 @@ export function Canvas({
       data-diagram-canvas
       className="relative flex-1 touch-none select-none overflow-hidden outline-none"
       style={{
-        backgroundColor: 'color-mix(in oklch, var(--background) 72%, transparent)',
-        backgroundImage: `
-          linear-gradient(to right, rgb(34 227 107 / 0.09) 1px, transparent 1px),
-          linear-gradient(to bottom, rgb(34 227 107 / 0.09) 1px, transparent 1px),
-          linear-gradient(to right, rgb(34 227 107 / 0.04) 1px, transparent 1px),
-          linear-gradient(to bottom, rgb(34 227 107 / 0.04) 1px, transparent 1px)`,
-        backgroundSize: `${majorSize}px ${majorSize}px, ${majorSize}px ${majorSize}px, ${gridSize}px ${gridSize}px, ${gridSize}px ${gridSize}px`,
+        backgroundColor: 'color-mix(in oklch, var(--canvas) 88%, transparent)',
+        backgroundImage: `radial-gradient(circle, var(--canvas-dot) ${dot}px, transparent ${dot + 0.4}px)`,
+        backgroundSize: `${gridSize}px ${gridSize}px`,
         backgroundPosition: `${view.x}px ${view.y}px`,
         cursor: gesture.current?.kind === 'pan' && gesture.current.moved ? 'grabbing' : 'default',
       }}
@@ -299,11 +295,11 @@ export function Canvas({
             const p = edgePath(edge)
             const active = selectedTable !== null && (edge.from.id === selectedTable || edge.to.id === selectedTable)
             const dim = selectedTable !== null && !active
-            const stroke = active ? getColorByName(edge.from.color || '').hex : '#22e36b'
+            const stroke = active ? getColorByName(edge.from.color || '').hex : '#4ade80'
             return (
-              <g key={edge.id} opacity={dim ? 0.25 : active ? 1 : 0.7}>
-                <path d={p.d} fill="none" stroke={stroke} strokeWidth={active ? 2.25 : 1.75} strokeLinecap="round" />
-                <path d={cardinalityMarks(p, edge.oneToOne)} fill="none" stroke={stroke} strokeWidth={1.75} />
+              <g key={edge.id} opacity={dim ? 0.18 : active ? 1 : 0.55}>
+                <path d={p.d} fill="none" stroke={stroke} strokeWidth={active ? 2 : 1.5} strokeLinecap="round" />
+                <path d={cardinalityMarks(p, edge.oneToOne)} fill="none" stroke={stroke} strokeWidth={1.5} />
               </g>
             )
           })}
@@ -327,31 +323,23 @@ export function Canvas({
 
       {children}
 
-      <div
-        data-canvas-ui
-        className="absolute bottom-4 right-4 z-10 flex items-center overflow-hidden rounded-md border border-primary/30 bg-card/90 text-xs text-primary backdrop-blur-sm"
-      >
-        <button type="button" className="p-2 hover:bg-primary/15" onClick={() => zoomAt(1 / 1.2)} title="Zoom out (-)" aria-label="Zoom out">
+      <div data-canvas-ui className="floating absolute bottom-4 right-4 z-10 flex items-center p-0.5 text-xs text-muted-foreground">
+        <button type="button" className="rounded-md p-1.5 hover:bg-accent hover:text-foreground" onClick={() => zoomAt(1 / 1.2)} title="Zoom out (-)" aria-label="Zoom out">
           <Minus className="size-4" />
         </button>
         <button
           type="button"
-          className="min-w-14 px-1 py-2 tabular-nums hover:bg-primary/15"
+          className="min-w-12 rounded-md px-1 py-1.5 font-medium tabular-nums hover:bg-accent hover:text-foreground"
           onClick={() => zoomAt(1 / viewRef.current.scale)}
           title="Reset zoom to 100%"
         >
           {Math.round(view.scale * 100)}%
         </button>
-        <button type="button" className="p-2 hover:bg-primary/15" onClick={() => zoomAt(1.2)} title="Zoom in (+)" aria-label="Zoom in">
+        <button type="button" className="rounded-md p-1.5 hover:bg-accent hover:text-foreground" onClick={() => zoomAt(1.2)} title="Zoom in (+)" aria-label="Zoom in">
           <Plus className="size-4" />
         </button>
-        <button
-          type="button"
-          className="border-l border-primary/30 p-2 hover:bg-primary/15"
-          onClick={fitView}
-          title="Fit diagram to screen (F)"
-          aria-label="Fit diagram to screen"
-        >
+        <span className="mx-0.5 h-4 w-px bg-border" />
+        <button type="button" className="rounded-md p-1.5 hover:bg-accent hover:text-foreground" onClick={fitView} title="Fit diagram to screen (F)" aria-label="Fit diagram to screen">
           <Maximize className="size-4" />
         </button>
       </div>

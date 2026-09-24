@@ -2,6 +2,7 @@
 
 import {
   Braces,
+  ChevronDown,
   Database,
   Download,
   FileCode2,
@@ -10,7 +11,8 @@ import {
   Image as ImageIcon,
   LayoutGrid,
   Maximize,
-  MoreVertical,
+  MoreHorizontal,
+  PanelLeft,
   Plus,
   Redo2,
   Search,
@@ -18,6 +20,7 @@ import {
   Undo2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +31,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { TEMPLATES } from '@/lib/templates'
+import { cn } from '@/lib/utils'
+import { Brand, BrandMark } from './brand'
 import type { ExportTab } from './export-dialog'
 
 interface HeaderProps {
@@ -35,6 +40,8 @@ interface HeaderProps {
   tableCount: number
   canUndo: boolean
   canRedo: boolean
+  explorerOpen: boolean
+  onToggleExplorer: () => void
   onUndo: () => void
   onRedo: () => void
   onOpenSearch: () => void
@@ -48,13 +55,19 @@ interface HeaderProps {
   onShowHelp: () => void
 }
 
-const iconButton = 'size-8 border-primary/40 text-primary hover:border-primary hover:bg-primary/20 disabled:opacity-40'
+const toolButton = 'size-8 text-muted-foreground hover:text-foreground disabled:opacity-35'
+
+function Divider({ className }: { className?: string }) {
+  return <span className={cn('mx-1 h-5 w-px shrink-0 bg-border', className)} aria-hidden />
+}
 
 export function Header({
   projectSwitcher,
   tableCount,
   canUndo,
   canRedo,
+  explorerOpen,
+  onToggleExplorer,
   onUndo,
   onRedo,
   onOpenSearch,
@@ -70,111 +83,141 @@ export function Header({
   const empty = tableCount === 0
 
   return (
-    <header className="relative z-20 border-b border-primary/30 bg-card/95 backdrop-blur-sm cyber-border">
-      <div className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4">
-        <a href="./" className="flex shrink-0 items-center gap-2.5" aria-label="MatrixForge home">
-          <span className="flex size-9 items-center justify-center rounded border border-primary bg-primary/20 cyber-border">
-            <span className="glow-text text-lg font-bold text-primary">◈</span>
-          </span>
-          <span className="hidden leading-tight md:block">
-            <span className="glow-text block text-base font-bold text-primary">MatrixForge</span>
-            <span className="block text-[10px] text-muted-foreground">{'// DATABASE ARCHITECT'}</span>
-          </span>
-        </a>
+    <header className="panel relative z-20 flex h-13 shrink-0 items-center gap-1 border-b px-2 sm:px-3">
+      <a href="./" className="flex shrink-0 items-center rounded-md px-1.5 py-1 hover:bg-accent" aria-label="MatrixForge home">
+        <Brand className="hidden md:flex" />
+        <BrandMark className="md:hidden" />
+      </a>
 
-        <div className="flex min-w-0 items-center gap-2">
-          {projectSwitcher}
-          {!empty && (
-            <span className="hidden shrink-0 rounded border border-primary/30 bg-primary/10 px-2 py-1 text-[11px] text-primary lg:inline">
-              {tableCount} table{tableCount === 1 ? '' : 's'}
-            </span>
-          )}
-        </div>
+      <Divider className="hidden md:block" />
 
-        <div className="ml-auto flex shrink-0 items-center gap-1.5">
-          <Button variant="outline" size="icon" onClick={onOpenSearch} title="Search (Ctrl+K)" aria-label="Search tables" className={`${iconButton} hidden sm:inline-flex`}>
-            <Search className="size-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={onUndo} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo" className={iconButton}>
-            <Undo2 className="size-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={onRedo} disabled={!canRedo} title="Redo (Ctrl+Shift+Z)" aria-label="Redo" className={`${iconButton} hidden sm:inline-flex`}>
-            <Redo2 className="size-4" />
-          </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onToggleExplorer}
+        title={explorerOpen ? 'Hide table list' : 'Show table list'}
+        aria-label="Toggle table list"
+        aria-pressed={explorerOpen}
+        className={cn(toolButton, 'hidden md:inline-flex', explorerOpen && 'text-foreground')}
+      >
+        <PanelLeft className="size-4" />
+      </Button>
 
-          <Button variant="outline" size="sm" onClick={onAddTable} title="New table (N)" className="h-8 gap-1.5 border-primary/50 text-primary hover:border-primary hover:bg-primary/20">
-            <Plus className="size-4" />
-            <span className="hidden sm:inline">New table</span>
-          </Button>
+      <div className="min-w-0">{projectSwitcher}</div>
 
-          <Button
-            size="sm"
-            onClick={() => onExport('sql')}
-            disabled={empty}
-            title="Export (Ctrl+E)"
-            className="hidden h-8 gap-1.5 sm:inline-flex"
-          >
-            <Download className="size-4" />
-            Export
-          </Button>
+      <div className="ml-auto flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          onClick={onOpenSearch}
+          className="hidden h-8 w-56 items-center gap-2 rounded-md border bg-background/60 px-2.5 text-sm text-muted-foreground transition-colors hover:border-input hover:text-foreground lg:flex"
+        >
+          <Search className="size-3.5" />
+          <span className="flex-1 text-left">Search schema…</span>
+          <Kbd className="bg-accent">⌘K</Kbd>
+        </button>
+        <Button variant="ghost" size="icon" onClick={onOpenSearch} title="Search (Ctrl+K)" aria-label="Search" className={cn(toolButton, 'lg:hidden')}>
+          <Search className="size-4" />
+        </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" title="More" aria-label="More actions" className={iconButton}>
-                <MoreVertical className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-[80dvh] w-60 overflow-y-auto border-primary/30 bg-card">
-              <DropdownMenuItem className="sm:hidden" onSelect={onOpenSearch}>
-                <Search className="size-4" /> Search
+        <Divider className="hidden sm:block" />
+
+        <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo" className={toolButton}>
+          <Undo2 className="size-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Redo (Ctrl+Shift+Z)" aria-label="Redo" className={cn(toolButton, 'hidden sm:inline-flex')}>
+          <Redo2 className="size-4" />
+        </Button>
+
+        <Divider className="hidden sm:block" />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="hidden h-8 gap-1.5 text-muted-foreground hover:text-foreground md:inline-flex">
+              <Database className="size-4" />
+              Templates
+              <ChevronDown className="size-3.5 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-72">
+            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Opens as a new project</DropdownMenuLabel>
+            {TEMPLATES.map(t => (
+              <DropdownMenuItem key={t.id} onSelect={() => onLoadTemplate(t.id)} className="items-start gap-3 py-2">
+                <Database className="mt-0.5 size-4 text-primary" />
+                <span className="min-w-0">
+                  <span className="block font-medium">{t.name}</span>
+                  <span className="block text-xs text-muted-foreground">{t.description}</span>
+                </span>
+                <span className="ml-auto pt-0.5 text-[11px] tabular-nums text-muted-foreground">{t.tables.length}</span>
               </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button variant="ghost" size="sm" onClick={onImport} className="hidden h-8 gap-1.5 text-muted-foreground hover:text-foreground md:inline-flex">
+          <FileUp className="size-4" />
+          Import
+        </Button>
+
+        <Button variant="outline" size="sm" onClick={onAddTable} title="New table (N)" className="h-8 gap-1.5 bg-transparent">
+          <Plus className="size-4" />
+          <span className="hidden sm:inline">Table</span>
+        </Button>
+        <Button size="sm" onClick={() => onExport('sql')} disabled={empty} title="Export (Ctrl+E)" className="hidden h-8 gap-1.5 font-medium sm:inline-flex">
+          <Download className="size-4" />
+          Export
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" title="More" aria-label="More actions" className={toolButton}>
+              <MoreHorizontal className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="max-h-[80dvh] w-60 overflow-y-auto">
+            <div className="md:hidden">
               <DropdownMenuItem className="sm:hidden" disabled={!canRedo} onSelect={onRedo}>
-                <Redo2 className="size-4" /> Redo
+                <Redo2 /> Redo
               </DropdownMenuItem>
-
-              <DropdownMenuLabel className="text-[11px] font-normal text-muted-foreground">Templates (open as a new project)</DropdownMenuLabel>
+              <DropdownMenuItem onSelect={onImport}>
+                <FileUp /> Import SQL or JSON…
+              </DropdownMenuItem>
+              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Templates</DropdownMenuLabel>
               {TEMPLATES.map(t => (
-                <DropdownMenuItem key={t.id} onSelect={() => onLoadTemplate(t.id)} title={t.description}>
-                  <Database className="size-4" /> {t.name}
-                  <span className="ml-auto truncate pl-2 text-[10px] text-muted-foreground">{t.tables.length} tables</span>
+                <DropdownMenuItem key={t.id} onSelect={() => onLoadTemplate(t.id)}>
+                  <Database /> {t.name}
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuItem onSelect={onImport}>
-                <FileUp className="size-4" /> Import SQL or JSON…
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-primary/20" />
-              <DropdownMenuItem disabled={empty} onSelect={() => onExport('sql')}>
-                <FileCode2 className="size-4" /> Export SQL
-                <DropdownMenuShortcut>Ctrl E</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={empty} onSelect={() => onExport('image')}>
-                <ImageIcon className="size-4" /> Export image
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={empty} onSelect={() => onExport('json')}>
-                <Braces className="size-4" /> Export JSON
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-primary/20" />
-              <DropdownMenuItem disabled={empty} onSelect={onAutoLayout}>
-                <LayoutGrid className="size-4" /> Auto-arrange tables
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={empty} onSelect={onFitView}>
-                <Maximize className="size-4" /> Fit to screen
-                <DropdownMenuShortcut>F</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={empty} variant="destructive" onSelect={onClearAll}>
-                <Trash2 className="size-4" /> Clear all tables
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-primary/20" />
-              <DropdownMenuItem onSelect={onShowHelp}>
-                <HelpCircle className="size-4" /> Help &amp; shortcuts
-                <DropdownMenuShortcut>?</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <DropdownMenuSeparator />
+            </div>
+            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Export</DropdownMenuLabel>
+            <DropdownMenuItem disabled={empty} onSelect={() => onExport('sql')}>
+              <FileCode2 /> SQL script
+              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={empty} onSelect={() => onExport('image')}>
+              <ImageIcon /> PNG or SVG image
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={empty} onSelect={() => onExport('json')}>
+              <Braces /> JSON backup
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Diagram</DropdownMenuLabel>
+            <DropdownMenuItem disabled={empty} onSelect={onAutoLayout}>
+              <LayoutGrid /> Auto-arrange
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={empty} onSelect={onFitView}>
+              <Maximize /> Fit to screen
+              <DropdownMenuShortcut>F</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={empty} variant="destructive" onSelect={onClearAll}>
+              <Trash2 /> Clear all tables
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={onShowHelp}>
+              <HelpCircle /> Help &amp; shortcuts
+              <DropdownMenuShortcut>?</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

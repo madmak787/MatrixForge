@@ -83,9 +83,9 @@ export function ImportDialog({ open, onOpenChange, onImport, hasTables }: Import
         onOpenChange(o)
       }}
     >
-      <DialogContent className="flex max-h-[90dvh] flex-col border-primary/30 bg-card sm:max-w-2xl">
+      <DialogContent className="flex max-h-[90dvh] flex-col bg-card sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="glow-text text-primary">Import</DialogTitle>
+          <DialogTitle>Import</DialogTitle>
           <DialogDescription>
             Paste <b>CREATE TABLE</b> statements (MySQL, PostgreSQL or SQLite) or a MatrixForge JSON export. Nothing leaves your browser.
           </DialogDescription>
@@ -108,7 +108,7 @@ export function ImportDialog({ open, onOpenChange, onImport, hasTables }: Import
             }}
             placeholder={SAMPLE}
             spellCheck={false}
-            className="min-h-56 flex-1 resize-none rounded-md border border-primary/30 bg-background/60 p-3 font-mono text-xs leading-relaxed outline-none placeholder:text-muted-foreground/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="min-h-56 flex-1 resize-none rounded-md border bg-background/60 p-3 font-mono text-xs leading-relaxed outline-none placeholder:text-muted-foreground/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             aria-label="SQL or JSON to import"
           />
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -123,7 +123,7 @@ export function ImportDialog({ open, onOpenChange, onImport, hasTables }: Import
                 e.target.value = ''
               }}
             />
-            <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} className="border-primary/40 text-primary hover:bg-primary/15">
+            <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} className="bg-transparent">
               <FileUp className="size-4" />
               Choose file
             </Button>
@@ -139,7 +139,7 @@ export function ImportDialog({ open, onOpenChange, onImport, hasTables }: Import
 
         <DialogFooter className="gap-2">
           {hasTables && (
-            <Button variant="outline" disabled={!text.trim()} onClick={() => submit('merge')} className="border-primary/50 text-primary hover:bg-primary/20">
+            <Button variant="outline" disabled={!text.trim()} onClick={() => submit('merge')} className="bg-transparent">
               Add to this project
             </Button>
           )}

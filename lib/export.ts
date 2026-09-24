@@ -16,9 +16,9 @@ import {
 
 const MARGIN = 48
 const FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
-const BG = '#0b120d'
-const EDGE = '#22e36b'
-const MUTED = '#6f8f79'
+const BG = '#0b100e'
+const EDGE = '#4ade80'
+const MUTED = '#8b9c93'
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
@@ -38,14 +38,14 @@ export function buildDiagramSVG(tables: Table[], title?: string): { svg: string;
   const parts: string[] = []
   parts.push(`<rect width="100%" height="100%" fill="${BG}"/>`)
   if (title) {
-    parts.push(`<text x="${MARGIN}" y="${MARGIN - 4}" fill="${EDGE}" font-size="18" font-weight="700">${esc(title)}</text>`)
+    parts.push(`<text x="${MARGIN}" y="${MARGIN - 4}" fill="#e8f0eb" font-size="18" font-weight="700">${esc(title)}</text>`)
   }
   parts.push(`<g transform="translate(${dx} ${dy})">`)
 
   for (const edge of getEdges(tables)) {
     const p = edgePath(edge)
-    parts.push(`<path d="${p.d}" fill="none" stroke="${EDGE}" stroke-opacity="0.75" stroke-width="1.75"/>`)
-    parts.push(`<path d="${cardinalityMarks(p, edge.oneToOne)}" fill="none" stroke="${EDGE}" stroke-width="1.75"/>`)
+    parts.push(`<path d="${p.d}" fill="none" stroke="${EDGE}" stroke-opacity="0.6" stroke-width="1.5"/>`)
+    parts.push(`<path d="${cardinalityMarks(p, edge.oneToOne)}" fill="none" stroke="${EDGE}" stroke-opacity="0.8" stroke-width="1.5"/>`)
   }
 
   for (const t of tables) {
@@ -54,19 +54,19 @@ export function buildDiagramSVG(tables: Table[], title?: string): { svg: string;
     const h = tableHeight(t)
     const hh = headerHeight(t)
     parts.push(`<g transform="translate(${x} ${y})">`)
-    parts.push(`<rect width="${NODE_WIDTH}" height="${h}" rx="8" fill="#0f1a13" stroke="${color.hex}" stroke-width="1.5"/>`)
-    parts.push(`<path d="M 0 8 A 8 8 0 0 1 8 0 L ${NODE_WIDTH - 8} 0 A 8 8 0 0 1 ${NODE_WIDTH} 8 L ${NODE_WIDTH} ${hh} L 0 ${hh} Z" fill="${color.hex}" fill-opacity="0.16"/>`)
-    parts.push(`<line x1="0" y1="${hh}" x2="${NODE_WIDTH}" y2="${hh}" stroke="${color.hex}" stroke-opacity="0.6"/>`)
-    parts.push(`<text x="14" y="${HEADER_HEIGHT / 2 + 5}" fill="${color.hex}" font-size="14" font-weight="700">${esc(truncate(t.name, 30))}</text>`)
+    parts.push(`<rect width="${NODE_WIDTH}" height="${h}" rx="8" fill="#141b18" stroke="#2a3530"/>`)
+    parts.push(`<path d="M 0 8 A 8 8 0 0 1 8 0 L ${NODE_WIDTH - 8} 0 A 8 8 0 0 1 ${NODE_WIDTH} 8 L ${NODE_WIDTH} ${hh} L 0 ${hh} Z" fill="${color.hex}" fill-opacity="0.09"/><path d="M 0 8 A 8 8 0 0 1 8 0 L ${NODE_WIDTH - 8} 0 A 8 8 0 0 1 ${NODE_WIDTH} 8 L ${NODE_WIDTH} 3 L 0 3 Z" fill="${color.hex}"/>`)
+    parts.push(`<line x1="0" y1="${hh}" x2="${NODE_WIDTH}" y2="${hh}" stroke="#2a3530"/>`)
+    parts.push(`<rect x="12" y="${HEADER_HEIGHT / 2 - 2}" width="8" height="8" rx="2" fill="${color.hex}"/><text x="28" y="${HEADER_HEIGHT / 2 + 6}" fill="#e8f0eb" font-size="13" font-weight="700">${esc(truncate(t.name, 30))}</text>`)
     if (t.comment) {
-      parts.push(`<text x="14" y="${HEADER_HEIGHT + COMMENT_HEIGHT / 2 - 2}" fill="${MUTED}" font-size="11">${esc(truncate(t.comment, 38))}</text>`)
+      parts.push(`<text x="28" y="${HEADER_HEIGHT + COMMENT_HEIGHT / 2 - 4}" fill="${MUTED}" font-size="11">${esc(truncate(t.comment, 38))}</text>`)
     }
     t.columns.forEach((c, i) => {
       const cy = hh + BODY_PADDING + i * ROW_HEIGHT + ROW_HEIGHT / 2 + 4
       const badge = c.isPrimaryKey ? 'PK' : c.isForeignKey ? 'FK' : c.isUnique ? 'UQ' : ''
-      const badgeColor = c.isPrimaryKey ? '#facc15' : c.isForeignKey ? '#38bdf8' : '#c084fc'
+      const badgeColor = c.isPrimaryKey ? '#fcd34d' : c.isForeignKey ? '#7dd3fc' : '#c4b5fd'
       if (badge) parts.push(`<text x="12" y="${cy}" fill="${badgeColor}" font-size="10" font-weight="700">${badge}</text>`)
-      parts.push(`<text x="36" y="${cy}" fill="#d7f5df" font-size="12">${esc(truncate(c.name, 18))}${c.isNullable || c.isPrimaryKey ? '' : '<tspan fill="#fb923c">*</tspan>'}</text>`)
+      parts.push(`<text x="36" y="${cy}" fill="#dfe8e3" font-size="12">${esc(truncate(c.name, 18))}${c.isNullable || c.isPrimaryKey ? '' : '<tspan fill="#fbbf24">*</tspan>'}</text>`)
       const type = c.length && c.type !== 'ENUM' ? `${c.type}(${c.length})` : c.type
       parts.push(`<text x="${NODE_WIDTH - 12}" y="${cy}" fill="${MUTED}" font-size="11" text-anchor="end">${esc(truncate(type.toLowerCase(), 14))}</text>`)
     })

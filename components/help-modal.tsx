@@ -32,18 +32,18 @@ const STEPS = [
 export function HelpModal({ isOpen, onClose }: HelpModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={o => !o && onClose()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto border-primary/30 bg-card sm:max-w-xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto bg-card sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="glow-text text-primary">How MatrixForge works</DialogTitle>
+          <DialogTitle>How MatrixForge works</DialogTitle>
           <DialogDescription>Design database schemas visually. Everything is saved in this browser; nothing is uploaded.</DialogDescription>
         </DialogHeader>
 
         <ol className="space-y-3 text-sm">
           {STEPS.map(([title, body], i) => (
             <li key={title} className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded border border-primary/40 text-xs text-primary">{i + 1}</span>
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border bg-background/60 font-mono text-[11px] text-primary">{i + 1}</span>
               <div>
-                <p className="font-semibold text-primary">{title}</p>
+                <p className="font-medium">{title}</p>
                 <p className="text-muted-foreground">{body}</p>
               </div>
             </li>
@@ -65,7 +65,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <p className="mt-2 text-[11px] text-muted-foreground">On a Mac, use ⌘ instead of Ctrl.</p>
         </div>
 
-        <p className="border-t border-primary/20 pt-3 text-xs text-muted-foreground">
+        <p className="border-t pt-3 text-xs text-muted-foreground">
           Made by{' '}
           <a href="https://khanamir.me" target="_blank" rel="noopener" className="text-primary underline-offset-2 hover:underline">
             Mohd Amir Khan

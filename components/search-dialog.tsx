@@ -53,10 +53,10 @@ export function SearchDialog({ isOpen, onClose, tables, onSelect }: SearchDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={o => !o && close()}>
-      <DialogContent showCloseButton={false} className="top-24 translate-y-0 gap-0 overflow-hidden border-primary/30 bg-card p-0 sm:max-w-md">
+      <DialogContent showCloseButton={false} className="top-24 translate-y-0 gap-0 overflow-hidden bg-card p-0 sm:max-w-md">
         <DialogTitle className="sr-only">Search tables and columns</DialogTitle>
-        <div className="flex items-center gap-2 border-b border-primary/30 px-4 py-3">
-          <Search className="size-4 text-primary/60" />
+        <div className="flex items-center gap-2 border-b px-4 py-3">
+          <Search className="size-4 text-muted-foreground" />
           <input
             autoFocus
             value={search}
@@ -96,7 +96,7 @@ export function SearchDialog({ isOpen, onClose, tables, onSelect }: SearchDialog
                 onClick={() => choose(hit)}
                 className={cn(
                   'flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm',
-                  idx === selectedIndex ? 'bg-primary/20 text-primary' : 'text-foreground',
+                  idx === selectedIndex ? 'bg-accent text-foreground' : 'text-foreground/85',
                 )}
               >
                 <span className="truncate font-mono">{hit.label}</span>
@@ -106,7 +106,7 @@ export function SearchDialog({ isOpen, onClose, tables, onSelect }: SearchDialog
           )}
         </div>
 
-        <div className="border-t border-primary/20 px-4 py-2 text-[11px] text-muted-foreground">↑↓ to move · Enter to open · Esc to close</div>
+        <div className="border-t px-4 py-2 text-[11px] text-muted-foreground">↑↓ to move · Enter to open · Esc to close</div>
       </DialogContent>
     </Dialog>
   )

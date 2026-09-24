@@ -29,9 +29,9 @@ export function NameDialog({ request, onClose }: { request: NameRequest | null; 
 
   return (
     <Dialog open={!!request} onOpenChange={o => !o && onClose()}>
-      <DialogContent className="border-primary/30 bg-card sm:max-w-sm">
+      <DialogContent className="bg-card sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-primary">{request?.title}</DialogTitle>
+          <DialogTitle>{request?.title}</DialogTitle>
           {request?.description && <DialogDescription>{request.description}</DialogDescription>}
         </DialogHeader>
         <form
@@ -46,7 +46,7 @@ export function NameDialog({ request, onClose }: { request: NameRequest | null; 
             maxLength={80}
             onChange={e => setValue(e.target.value)}
             onFocus={e => e.target.select()}
-            className="border-primary/30 bg-background"
+            className="bg-background/60"
             aria-label="Name"
           />
           <DialogFooter className="mt-4">

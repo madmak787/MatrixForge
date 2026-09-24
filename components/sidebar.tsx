@@ -39,10 +39,7 @@ const SIZED_TYPES = new Set(['VARCHAR', 'CHAR', 'DECIMAL', 'ENUM'])
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-      <span className="text-primary">{'> '}</span>
-      {children}
-    </h3>
+    <h3 className="panel-heading">{children}</h3>
   )
 }
 
@@ -58,8 +55,8 @@ function Flag({
   disabled?: boolean
 }) {
   return (
-    <label className={cn('flex cursor-pointer items-center gap-2 text-muted-foreground hover:text-foreground', disabled && 'pointer-events-none opacity-50')}>
-      <Checkbox checked={checked} disabled={disabled} onCheckedChange={v => onChange(v === true)} className="border-primary/50" />
+    <label className={cn('flex cursor-pointer items-center gap-2 text-foreground/85 hover:text-foreground', disabled && 'pointer-events-none opacity-50')}>
+      <Checkbox checked={checked} disabled={disabled} onCheckedChange={v => onChange(v === true)}  />
       {label}
     </label>
   )
@@ -82,14 +79,14 @@ function ColumnEditor({
   const nameTaken = table.columns.some(c => c.id !== column.id && c.name.toLowerCase() === column.name.toLowerCase())
 
   return (
-    <div className="space-y-3 border-t border-primary/20 px-3 pb-3 pt-3 text-xs">
+    <div className="space-y-3 border-t px-3 pb-3.5 pt-3 text-xs">
       <div>
         <Label htmlFor={`col-name-${column.id}`} className="mb-1 text-xs text-muted-foreground">Name</Label>
         <Input
           id={`col-name-${column.id}`}
           value={column.name}
           onChange={e => actions.onRenameColumn(table.id, column.id, sanitizeIdentifier(e.target.value))}
-          className="h-8 border-primary/30 bg-background font-mono text-xs"
+          className="h-8 bg-background/60 font-mono text-xs"
           aria-invalid={!column.name || nameTaken}
         />
         {(!column.name || nameTaken) && (
@@ -101,10 +98,10 @@ function ColumnEditor({
         <div className={cn(!SIZED_TYPES.has(column.type) && 'col-span-2')}>
           <Label className="mb-1 text-xs text-muted-foreground">Type</Label>
           <Select value={column.type} onValueChange={type => update({ type, length: SIZED_TYPES.has(type) ? column.length : undefined })}>
-            <SelectTrigger size="sm" className="h-8 w-full border-primary/30 bg-background text-xs">
+            <SelectTrigger size="sm" className="h-8 w-full bg-background/60 text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="max-h-72 border-primary/30 bg-card">
+            <SelectContent className="max-h-72 ">
               {typeOptions.map(type => (
                 <SelectItem key={type} value={type} className="text-xs">{type}</SelectItem>
               ))}
@@ -121,7 +118,7 @@ function ColumnEditor({
               value={column.length || ''}
               onChange={e => update({ length: e.target.value || undefined }, `len-${column.id}`)}
               placeholder={column.type === 'ENUM' ? 'a,b,c' : DEFAULT_LENGTH[column.type]}
-              className="h-8 border-primary/30 bg-background font-mono text-xs"
+              className="h-8 bg-background/60 font-mono text-xs"
             />
           </div>
         )}
@@ -144,7 +141,7 @@ function ColumnEditor({
         />
       </div>
 
-      <div className="rounded-md border border-primary/20 bg-background/40 p-2.5">
+      <div className="rounded-md border bg-background/40 p-2.5">
         <Flag
           label="Foreign key"
           checked={!!column.isForeignKey}
@@ -167,10 +164,10 @@ function ColumnEditor({
                     })
                   }}
                 >
-                  <SelectTrigger size="sm" className="h-8 w-full border-primary/30 bg-background text-xs">
+                  <SelectTrigger size="sm" className="h-8 w-full bg-background/60 text-xs">
                     <SelectValue placeholder="Choose…" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-72 border-primary/30 bg-card">
+                  <SelectContent className="max-h-72 ">
                     {tables.map(t => (
                       <SelectItem key={t.id} value={t.name} className="text-xs">{t.name}</SelectItem>
                     ))}
@@ -190,10 +187,10 @@ function ColumnEditor({
                     })
                   }}
                 >
-                  <SelectTrigger size="sm" className="h-8 w-full border-primary/30 bg-background text-xs">
+                  <SelectTrigger size="sm" className="h-8 w-full bg-background/60 text-xs">
                     <SelectValue placeholder="Choose…" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-72 border-primary/30 bg-card">
+                  <SelectContent className="max-h-72 ">
                     {target?.columns.map(c => (
                       <SelectItem key={c.id} value={c.name} className="text-xs">{c.name}</SelectItem>
                     ))}
@@ -204,10 +201,10 @@ function ColumnEditor({
             <div>
               <Label className="mb-1 text-xs text-muted-foreground">On delete</Label>
               <Select value={column.onDelete || 'NO ACTION'} onValueChange={v => update({ onDelete: v === 'NO ACTION' ? undefined : (v as ReferentialAction) })}>
-                <SelectTrigger size="sm" className="h-8 w-full border-primary/30 bg-background text-xs">
+                <SelectTrigger size="sm" className="h-8 w-full bg-background/60 text-xs">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="border-primary/30 bg-card">
+                <SelectContent className="">
                   {REFERENTIAL_ACTIONS.map(a => (
                     <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>
                   ))}
@@ -229,7 +226,7 @@ function ColumnEditor({
           onChange={e => update({ defaultValue: e.target.value || undefined }, `def-${column.id}`)}
           placeholder="e.g. 0, active, CURRENT_TIMESTAMP"
           disabled={!!column.isAutoIncrement}
-          className="h-8 border-primary/30 bg-background font-mono text-xs"
+          className="h-8 bg-background/60 font-mono text-xs"
         />
       </div>
 
@@ -240,7 +237,7 @@ function ColumnEditor({
           value={column.comment || ''}
           onChange={e => update({ comment: e.target.value || undefined }, `cmt-${column.id}`)}
           placeholder="What this column holds"
-          className="h-8 border-primary/30 bg-background text-xs"
+          className="h-8 bg-background/60 text-xs"
         />
       </div>
     </div>
@@ -258,12 +255,9 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
   if (!table) {
     return (
       <aside className={cn('flex flex-col items-center justify-center gap-3 p-6 text-center', className)}>
-        <div className="text-4xl text-primary/40">◈</div>
-        <p className="text-sm text-muted-foreground">
-          <span className="text-primary">{'> '}</span>
-          Select a table to edit it
-        </p>
-        <p className="text-xs text-muted-foreground/70">Double-click the canvas to add one.</p>
+        <div className="flex size-10 items-center justify-center rounded-lg border bg-background/50 font-mono text-lg text-primary/70">◈</div>
+        <p className="text-sm font-medium">No table selected</p>
+        <p className="max-w-52 text-xs leading-relaxed text-muted-foreground">Select a table on the canvas or in the list to edit it. Double-click empty canvas to add one.</p>
       </aside>
     )
   }
@@ -278,7 +272,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
 
   return (
     <aside className={cn('flex min-h-0 flex-col', className)}>
-      <div className="flex items-center justify-between gap-2 border-b border-primary/30 px-4 py-3">
+      <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4">
         <SectionTitle>Table</SectionTitle>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="size-7 text-muted-foreground" title="Duplicate table" onClick={() => actions.onDuplicateTable(table.id)}>
@@ -296,7 +290,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="space-y-4 border-b border-primary/20 p-4">
+        <div className="space-y-4 border-b p-4">
           <div>
             <Label htmlFor="table-name" className="mb-1.5 text-xs text-muted-foreground">Name</Label>
             <Input
@@ -304,8 +298,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               value={table.name}
               onChange={e => actions.onRenameTable(table.id, sanitizeIdentifier(e.target.value))}
               placeholder="table_name"
-              className="border-primary/30 bg-background font-mono text-sm"
-              style={{ color: color.hex }}
+              className="bg-background/60 font-mono text-sm"
               aria-invalid={!table.name || nameTaken}
             />
             {(!table.name || nameTaken) && (
@@ -315,7 +308,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
 
           <div>
             <Label className="mb-1.5 text-xs text-muted-foreground">Color</Label>
-            <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Table color">
+            <div className="grid grid-cols-12 gap-1.5 py-0.5" role="radiogroup" aria-label="Table color">
               {TABLE_COLORS.map(c => (
                 <button
                   key={c.name}
@@ -325,8 +318,8 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                   title={c.name}
                   onClick={() => actions.onUpdateTable(table.id, { color: c.name })}
                   className={cn(
-                    'size-6 rounded-full border-2 transition-transform hover:scale-110',
-                    c.name === color.name ? 'border-foreground' : 'border-transparent',
+                    'aspect-square w-full rounded-full ring-offset-2 ring-offset-card transition-transform hover:scale-110',
+                    c.name === color.name && 'ring-2 ring-foreground/80',
                   )}
                   style={{ backgroundColor: c.hex }}
                 />
@@ -342,7 +335,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               onChange={e => actions.onUpdateTable(table.id, { comment: e.target.value || undefined }, `tcmt-${table.id}`)}
               placeholder="What this table stores"
               rows={2}
-              className="w-full resize-none rounded-md border border-primary/30 bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="w-full resize-none rounded-md border bg-background/60 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             />
           </div>
         </div>
@@ -354,7 +347,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               onClick={() => actions.onAddColumn(table.id)}
               size="sm"
               variant="outline"
-              className="h-7 gap-1 border-primary/50 px-2 text-xs text-primary hover:bg-primary/20"
+              className="h-7 gap-1 bg-transparent px-2 text-xs"
             >
               <Plus className="size-3.5" />
               Add
@@ -362,7 +355,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
           </div>
 
           {table.columns.length === 0 && (
-            <p className="rounded bg-background/30 py-8 text-center text-xs text-muted-foreground">No columns yet</p>
+            <p className="rounded-md border border-dashed py-8 text-center text-xs text-muted-foreground">No columns yet</p>
           )}
 
           {table.columns.map((column, index) => {
@@ -371,9 +364,9 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               <div
                 key={column.id}
                 ref={expanded ? expandedRef : undefined}
-                className={cn('rounded-md border bg-background/40 transition-colors', expanded ? 'border-primary/50' : 'border-primary/15 hover:border-primary/35')}
+                className={cn('rounded-md border bg-background/40 transition-colors', expanded ? 'border-input bg-background/70' : 'hover:border-input')}
               >
-                <div className="flex items-center gap-1 pr-1">
+                <div className="group/row flex items-center gap-0.5 pr-1">
                   <button
                     type="button"
                     onClick={() => actions.onSelectColumn(expanded ? null : column.id)}
@@ -381,9 +374,9 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                     aria-expanded={expanded}
                   >
                     <ChevronRight className={cn('size-3.5 shrink-0 text-muted-foreground transition-transform', expanded && 'rotate-90')} />
-                    {column.isPrimaryKey && <Key className="size-3 shrink-0 text-yellow-400" />}
-                    {column.isForeignKey && <Link2 className="size-3 shrink-0 text-sky-400" />}
-                    <span className="truncate font-mono text-xs font-semibold text-primary">{column.name || '(unnamed)'}</span>
+                    {column.isPrimaryKey && <Key className="size-3 shrink-0 text-amber-300" />}
+                    {column.isForeignKey && <Link2 className="size-3 shrink-0 text-sky-300" />}
+                    <span className="truncate font-mono text-xs font-medium text-foreground">{column.name || '(unnamed)'}</span>
                     <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
                       {column.type.toLowerCase()}
                       {column.length && column.type !== 'ENUM' ? `(${column.length})` : ''}
@@ -392,7 +385,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-6 text-muted-foreground"
+                    className="size-6 text-muted-foreground [@media(hover:hover)]:opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
                     disabled={index === 0}
                     title="Move up"
                     onClick={() => actions.onMoveColumn(table.id, column.id, -1)}
@@ -402,7 +395,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-6 text-muted-foreground"
+                    className="size-6 text-muted-foreground [@media(hover:hover)]:opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
                     disabled={index === table.columns.length - 1}
                     title="Move down"
                     onClick={() => actions.onMoveColumn(table.id, column.id, 1)}
@@ -412,7 +405,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-6 text-muted-foreground hover:text-destructive"
+                    className="size-6 text-muted-foreground hover:text-destructive [@media(hover:hover)]:opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
                     title="Delete column"
                     onClick={() => actions.onDeleteColumn(table.id, column.id)}
                   >
@@ -425,16 +418,16 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
           })}
         </div>
 
-        <div className="space-y-2 border-t border-primary/20 p-4 text-xs">
+        <div className="space-y-2 border-t p-4 text-xs">
           <div className="flex items-center justify-between gap-2">
             <SectionTitle>Relations</SectionTitle>
             {others.length > 0 && (
               <Select value="" onValueChange={targetId => actions.onAddRelation(table.id, targetId)}>
-                <SelectTrigger size="sm" className="h-7 w-auto gap-1 border-primary/50 px-2 text-xs text-primary">
+                <SelectTrigger size="sm" className="h-7 w-auto gap-1 bg-transparent px-2 text-xs dark:bg-transparent">
                   <Plus className="size-3.5" />
                   <span>Link to…</span>
                 </SelectTrigger>
-                <SelectContent align="end" className="max-h-72 border-primary/30 bg-card">
+                <SelectContent align="end" className="max-h-72 ">
                   {others.map(t => (
                     <SelectItem key={t.id} value={t.id} className="text-xs">{t.name}</SelectItem>
                   ))}
@@ -450,9 +443,9 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               key={c.id}
               type="button"
               onClick={() => actions.onSelectColumn(c.id)}
-              className="block w-full truncate rounded bg-background/40 px-2 py-1.5 text-left font-mono hover:bg-primary/10"
+              className="block w-full truncate rounded-md border bg-background/40 px-2.5 py-1.5 text-left font-mono hover:border-input hover:bg-accent/50"
             >
-              <span className="text-primary">{c.name}</span>
+              <span className="text-foreground">{c.name}</span>
               <span className="text-muted-foreground"> → {c.references!.table}.{c.references!.column}</span>
             </button>
           ))}
@@ -461,10 +454,10 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
               key={`${t.id}-${c.id}`}
               type="button"
               onClick={() => actions.onSelectTable(t.id)}
-              className="block w-full truncate rounded bg-background/40 px-2 py-1.5 text-left font-mono hover:bg-primary/10"
+              className="block w-full truncate rounded-md border bg-background/40 px-2.5 py-1.5 text-left font-mono hover:border-input hover:bg-accent/50"
             >
               <span className="text-muted-foreground">{t.name}.{c.name} → </span>
-              <span className="text-primary">{c.references!.column}</span>
+              <span className="text-foreground">{c.references!.column}</span>
             </button>
           ))}
         </div>

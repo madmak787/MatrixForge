@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Database, FileUp, PanelRightOpen, Plus } from 'lucide-react'
+import { Check, Database, FileUp, Keyboard, LoaderCircle, PanelRightOpen, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Header } from './header'
 import { Sidebar, InspectorActions } from './sidebar'
@@ -13,6 +13,7 @@ import { HelpModal } from './help-modal'
 import { ProjectSwitcher } from './project-switcher'
 import { SearchDialog } from './search-dialog'
 import { NameDialog, NameRequest } from './name-dialog'
+import { TableList } from './table-list'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { Toaster } from '@/components/ui/sonner'
@@ -35,6 +36,7 @@ import {
 } from '@/lib/schema'
 
 const SAVE_DELAY_MS = 300
+const EXPLORER_KEY = 'matrixforge-explorer'
 
 function isTyping(target: EventTarget | null) {
   const el = target as HTMLElement | null
@@ -59,6 +61,21 @@ export function DiagramEditor() {
   const [showHelp, setShowHelp] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [nameRequest, setNameRequest] = useState<NameRequest | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [explorerOpen, setExplorerOpen] = useState(true)
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(EXPLORER_KEY) === 'closed') setExplorerOpen(false)
+    } catch {}
+  }, [])
+  const toggleExplorer = () =>
+    setExplorerOpen(open => {
+      try {
+        localStorage.setItem(EXPLORER_KEY, open ? 'closed' : 'open')
+      } catch {}
+      return !open
+    })
 
   const canvasRef = useRef<CanvasHandle>(null)
   const isMobile = useIsMobile()
@@ -115,8 +132,10 @@ export function DiagramEditor() {
       return
     }
     dirty.current = true
+    setSaving(true)
     const timer = setTimeout(() => {
       dirty.current = false
+      setSaving(false)
       const ok = ProjectStorage.updateProject(project.id, { tables })
       if (!ok && !saveWarned.current) {
         saveWarned.current = true
@@ -498,6 +517,8 @@ export function DiagramEditor() {
         tableCount={tables.length}
         canUndo={canUndo}
         canRedo={canRedo}
+        explorerOpen={explorerOpen}
+        onToggleExplorer={toggleExplorer}
         onUndo={undo}
         onRedo={redo}
         onOpenSearch={() => setShowSearch(true)}
@@ -512,6 +533,19 @@ export function DiagramEditor() {
       />
 
       <div className="relative z-10 flex min-h-0 flex-1">
+        {!isMobile && explorerOpen && (
+          <div className="panel w-60 shrink-0 border-r">
+            <TableList
+              tables={tables}
+              selectedTable={selectedTable}
+              onAddTable={() => addTable()}
+              onSelect={tableId => {
+                selectTableFresh(tableId)
+                canvasRef.current?.focusTable(tableId)
+              }}
+            />
+          </div>
+        )}
         <Canvas
           ref={canvasRef}
           tables={tables}
@@ -532,19 +566,20 @@ export function DiagramEditor() {
         >
           {tables.length === 0 && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
-              <div data-canvas-ui className="pointer-events-auto max-w-sm rounded-lg border border-primary/30 bg-card/90 p-6 text-center backdrop-blur-sm cyber-border">
-                <p className="glow-text mb-2 text-3xl text-primary">◈</p>
-                <h2 className="text-base font-semibold text-primary">Start your schema</h2>
-                <p className="mb-4 mt-1 text-xs text-muted-foreground">Add a table, start from a template, or import existing SQL.</p>
-                <div className="flex flex-col gap-2">
-                  <Button onClick={() => addTable()}>
+              <div data-canvas-ui className="floating pointer-events-auto w-full max-w-sm p-6">
+                <div className="mb-4 flex size-10 items-center justify-center rounded-lg border bg-background/60 font-mono text-lg text-primary">◈</div>
+                <h2 className="text-base font-semibold">Start your schema</h2>
+                <p className="mb-5 mt-1 text-sm text-muted-foreground">Add a table, start from a template, or import SQL you already have.</p>
+                <div className="grid gap-2">
+                  <Button onClick={() => addTable()} className="justify-start">
                     <Plus className="size-4" /> New table
+                    <kbd className="ml-auto font-mono text-[11px] opacity-70">N</kbd>
                   </Button>
-                  <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/20" onClick={() => loadTemplate('ecommerce')}>
-                    <Database className="size-4" /> E-commerce template
+                  <Button variant="outline" className="justify-start bg-transparent" onClick={() => loadTemplate('ecommerce')}>
+                    <Database className="size-4" /> Use the e-commerce template
                   </Button>
-                  <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/20" onClick={() => setShowImport(true)}>
-                    <FileUp className="size-4" /> Import SQL
+                  <Button variant="outline" className="justify-start bg-transparent" onClick={() => setShowImport(true)}>
+                    <FileUp className="size-4" /> Import SQL or JSON
                   </Button>
                 </div>
               </div>
@@ -552,20 +587,37 @@ export function DiagramEditor() {
           )}
 
           {isMobile && current && !inspectorOpen && (
-            <Button data-canvas-ui className="absolute bottom-4 left-4 z-10 shadow-lg" onClick={() => setInspectorOpen(true)}>
-              <PanelRightOpen className="size-4" /> Edit {current.name}
+            <Button data-canvas-ui className="absolute bottom-4 left-4 z-10 max-w-[60vw] shadow-lg" onClick={() => setInspectorOpen(true)}>
+              <PanelRightOpen className="size-4" /> <span className="truncate">Edit {current.name}</span>
             </Button>
           )}
         </Canvas>
 
         {!isMobile && (
-          <div className="w-80 shrink-0 border-l border-primary/30 bg-card/95 backdrop-blur-sm cyber-border xl:w-96">{inspector}</div>
+          <div className="panel w-80 shrink-0 border-l xl:w-[22rem]">{inspector}</div>
         )}
       </div>
 
+      <footer className="panel relative z-10 hidden h-7 shrink-0 items-center gap-4 border-t px-3 text-[11px] text-muted-foreground sm:flex">
+        <span className="flex items-center gap-1.5" aria-live="polite">
+          {saving ? <LoaderCircle className="size-3 animate-spin" /> : <Check className="size-3 text-primary" />}
+          {saving ? 'Saving…' : 'Saved in this browser'}
+        </span>
+        <span className="tabular-nums">
+          {tables.length} table{tables.length === 1 ? '' : 's'} · {tables.reduce((n, t) => n + t.columns.length, 0)} columns
+        </span>
+        {current && <span className="hidden truncate font-mono md:inline">{current.name}</span>}
+        <button type="button" onClick={() => setShowHelp(true)} className="ml-auto flex items-center gap-1.5 hover:text-foreground">
+          <Keyboard className="size-3" /> Shortcuts
+        </button>
+        <a href="https://khanamir.me" target="_blank" rel="noopener" className="hover:text-foreground">
+          by Mohd Amir Khan
+        </a>
+      </footer>
+
       {isMobile && (
         <Sheet open={inspectorOpen && !!current} onOpenChange={setInspectorOpen}>
-          <SheetContent side="bottom" className="h-[75dvh] gap-0 border-primary/30 bg-card p-0 [&>button]:hidden">
+          <SheetContent side="bottom" className="h-[75dvh] gap-0 rounded-t-xl bg-card p-0 [&>button]:hidden">
             <SheetTitle className="sr-only">Edit table</SheetTitle>
             {inspector}
           </SheetContent>
