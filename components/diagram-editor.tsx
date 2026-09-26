@@ -610,9 +610,12 @@ export function DiagramEditor() {
         <button type="button" onClick={() => setShowHelp(true)} className="ml-auto flex items-center gap-1.5 hover:text-foreground">
           <Keyboard className="size-3" /> Shortcuts
         </button>
-        <a href="https://khanamir.me" target="_blank" rel="noopener" className="hover:text-foreground">
-          by Mohd Amir Khan
-        </a>
+        <span>
+          Coded By &copy;
+          <a href="https://khanamir.me" target="_blank" rel="noopener" className="hover:text-foreground">
+            madmak787
+          </a>
+        </span>
       </footer>
 
       {isMobile && (
