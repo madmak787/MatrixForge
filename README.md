@@ -4,6 +4,8 @@ A visual database schema designer by [Mohd Amir Khan](https://khanamir.me). Draw
 
 Live: **https://tool.khanamir.me/matrix**
 
+![MatrixForge canvas with an e-commerce schema: users, products, orders, order items, reviews and categories](docs/screenshot.webp)
+
 ## Features
 
 - Tables with typed columns: primary, unique, not null, index, auto increment, default, comment, sizes (`VARCHAR(100)`, `DECIMAL(10,2)`) and ENUM values
