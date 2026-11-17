@@ -104,12 +104,12 @@
   }
 
   .panel {
-    @apply bg-card/95 backdrop-blur-md;
+    @apply bg-card;
   }
   .panel-heading {
-    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground;
+    @apply text-xs font-medium text-muted-foreground;
   }
   .floating {
-    @apply rounded-lg border bg-popover/90 shadow-lg shadow-black/40 backdrop-blur-md;
+    @apply rounded-lg border bg-popover shadow-lg shadow-black/40;
   }
 }

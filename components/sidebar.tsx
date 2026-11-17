@@ -318,7 +318,7 @@ export function Sidebar({ tables, table, selectedColumnId, onClose, className, .
                   title={c.name}
                   onClick={() => actions.onUpdateTable(table.id, { color: c.name })}
                   className={cn(
-                    'aspect-square w-full rounded-full ring-offset-2 ring-offset-card transition-transform hover:scale-110',
+                    'aspect-square w-full rounded-full ring-offset-2 ring-offset-card transition-shadow hover:ring-2 hover:ring-foreground/30',
                     c.name === color.name && 'ring-2 ring-foreground/80',
                   )}
                   style={{ backgroundColor: c.hex }}

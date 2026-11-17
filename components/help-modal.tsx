@@ -51,7 +51,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
         </ol>
 
         <div>
-          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Keyboard shortcuts</h4>
+          <h4 className="mb-2 text-xs font-medium text-muted-foreground">Keyboard shortcuts</h4>
           <dl className="grid gap-x-6 gap-y-1.5 text-xs sm:grid-cols-2">
             {SHORTCUTS.map(([label, keys]) => (
               <div key={label} className="flex items-center justify-between gap-2">
